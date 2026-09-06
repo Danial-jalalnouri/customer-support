@@ -1,5 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import db, { Question } from '@/lib/db';
+import sql from '@/lib/db';
+
+function serialize(rows: Record<string, unknown>[]) {
+  return rows.map((row) => {
+    const out: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(row)) {
+      if (typeof value === 'bigint') {
+        out[key] = Number(value);
+      } else if (value instanceof Date) {
+        out[key] = value.toISOString();
+      } else {
+        out[key] = value;
+      }
+    }
+    return out;
+  });
+}
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -8,17 +24,19 @@ export async function GET(request: NextRequest) {
   const unanswered = searchParams.get('unanswered') === 'true';
 
   let query = `
-    SELECT q.*, COUNT(a.id) as answer_count
+    SELECT q.*, CAST(COUNT(a.id) AS INTEGER) as answer_count
     FROM questions q
     LEFT JOIN answers a ON q.id = a.question_id
   `;
 
   const conditions: string[] = [];
-  const params: (string | number)[] = [];
+  const values: (string | number)[] = [];
+  let paramIndex = 1;
 
   if (search) {
-    conditions.push('(q.title LIKE ? OR q.body LIKE ?)');
-    params.push(`%${search}%`, `%${search}%`);
+    conditions.push(`(q.title ILIKE $${paramIndex} OR q.body ILIKE $${paramIndex + 1})`);
+    values.push(`%${search}%`, `%${search}%`);
+    paramIndex += 2;
   }
 
   if (unanswered) {
@@ -43,8 +61,8 @@ export async function GET(request: NextRequest) {
       query += ' ORDER BY q.created_at DESC';
   }
 
-  const questions = db.prepare(query).all(...params) as Question[];
-  return NextResponse.json(questions);
+  const result = await sql.query(query, values);
+  return NextResponse.json(serialize(result.rows ?? result));
 }
 
 export async function POST(request: NextRequest) {
@@ -55,10 +73,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Title is required' }, { status: 400 });
   }
 
-  const stmt = db.prepare('INSERT INTO questions (title, body) VALUES (?, ?)');
-  const result = stmt.run(title.trim(), questionBody?.trim() || null);
+  const result = await sql.query(
+    'INSERT INTO questions (title, body) VALUES ($1, $2) RETURNING *',
+    [title.trim(), questionBody?.trim() || null]
+  );
 
-  const question = db.prepare('SELECT * FROM questions WHERE id = ?').get(result.lastInsertRowid) as Question;
-
-  return NextResponse.json(question, { status: 201 });
+  return NextResponse.json(serialize(result.rows ?? result)[0], { status: 201 });
 }

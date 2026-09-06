@@ -1,5 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
-import db, { Answer } from '@/lib/db';
+import sql from '@/lib/db';
+
+function serialize(rows: Record<string, unknown>[]) {
+  return rows.map((row) => {
+    const out: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(row)) {
+      if (typeof value === 'bigint') {
+        out[key] = Number(value);
+      } else if (value instanceof Date) {
+        out[key] = value.toISOString();
+      } else {
+        out[key] = value;
+      }
+    }
+    return out;
+  });
+}
+
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const questionId = searchParams.get('question_id');
+
+  if (!questionId) {
+    return NextResponse.json({ error: 'question_id is required' }, { status: 400 });
+  }
+
+  const result = await sql.query(
+    'SELECT * FROM answers WHERE question_id = $1 ORDER BY created_at ASC',
+    [questionId]
+  );
+
+  return NextResponse.json(serialize(result.rows ?? result));
+}
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
@@ -13,15 +45,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Answer body is required' }, { status: 400 });
   }
 
-  const question = db.prepare('SELECT id FROM questions WHERE id = ?').get(question_id);
-  if (!question) {
+  const questionCheck = await sql.query('SELECT id FROM questions WHERE id = $1', [question_id]);
+  if ((questionCheck.rows ?? questionCheck).length === 0) {
     return NextResponse.json({ error: 'Question not found' }, { status: 404 });
   }
 
-  const stmt = db.prepare('INSERT INTO answers (question_id, body) VALUES (?, ?)');
-  const result = stmt.run(question_id, answerBody.trim());
+  const result = await sql.query(
+    'INSERT INTO answers (question_id, body) VALUES ($1, $2) RETURNING *',
+    [question_id, answerBody.trim()]
+  );
 
-  const answer = db.prepare('SELECT * FROM answers WHERE id = ?').get(result.lastInsertRowid) as Answer;
-
-  return NextResponse.json(answer, { status: 201 });
+  return NextResponse.json(serialize(result.rows ?? result)[0], { status: 201 });
 }

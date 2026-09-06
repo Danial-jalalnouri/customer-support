@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Question, Answer } from '@/lib/db';
 
 interface QuestionCardProps {
@@ -12,13 +12,33 @@ interface QuestionCardProps {
 
 export default function QuestionCard({
   question,
-  answers = [],
+  answers: initialAnswers,
   showAnswerForm = false,
   onAnswerSubmitted,
 }: QuestionCardProps) {
   const [expanded, setExpanded] = useState(false);
+  const [answers, setAnswers] = useState<Answer[]>(initialAnswers || []);
+  const [loadingAnswers, setLoadingAnswers] = useState(false);
+  const [answersFetched, setAnswersFetched] = useState(false);
   const [answerBody, setAnswerBody] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (expanded && !answersFetched && !loadingAnswers) {
+      setLoadingAnswers(true);
+      fetch(`/api/answers?question_id=${question.id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setAnswers(data);
+          setAnswersFetched(true);
+          setLoadingAnswers(false);
+        })
+        .catch(() => {
+          setLoadingAnswers(false);
+          setAnswersFetched(true);
+        });
+    }
+  }, [expanded, question.id, answersFetched, loadingAnswers]);
 
   const handleSubmitAnswer = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,6 +56,8 @@ export default function QuestionCard({
       });
 
       if (res.ok) {
+        const newAnswer = await res.json();
+        setAnswers((prev) => [...prev, newAnswer]);
         setAnswerBody('');
         onAnswerSubmitted?.();
       }
@@ -89,7 +111,9 @@ export default function QuestionCard({
 
       {expanded && (
         <div className="mt-5 pt-5 border-t border-[#444]">
-          {answers.length > 0 ? (
+          {loadingAnswers ? (
+            <p className="text-[#6c7086] text-sm">Loading answers...</p>
+          ) : answers.length > 0 ? (
             <div className="space-y-4">
               <h4 className="text-sm font-medium text-[#a6adc8]">Answers</h4>
               {answers.map((answer) => (
