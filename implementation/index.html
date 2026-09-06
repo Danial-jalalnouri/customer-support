@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Support System - User Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0f0f1a; color: #e0e0e0; line-height: 1.7; }
+
+        .hero {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            padding: 80px 20px; text-align: center; border-bottom: 3px solid #89b4fa;
+        }
+        .hero h1 { font-size: 3rem; color: #89b4fa; margin-bottom: 20px; }
+        .hero p { font-size: 1.2rem; color: #a6adc8; max-width: 600px; margin: 0 auto; }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+
+        .section {
+            background: #1e1e2e; border-radius: 16px; padding: 40px;
+            margin-bottom: 40px; border: 1px solid #313244;
+        }
+        .section h2 { font-size: 1.8rem; color: #89b4fa; margin-bottom: 25px; display: flex; align-items: center; gap: 12px; }
+        .section h2 .emoji { font-size: 2rem; }
+        .section h3 { font-size: 1.3rem; color: #cba6f7; margin: 25px 0 15px 0; }
+        .section p { color: #bac2de; margin-bottom: 15px; }
+
+        .step-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-top: 20px; }
+        .step-card { background: #313244; border-radius: 12px; padding: 25px; border-left: 4px solid #89b4fa; }
+        .step-number {
+            display: inline-block; width: 35px; height: 35px; background: #89b4fa;
+            color: #1e1e2e; border-radius: 50%; text-align: center; line-height: 35px;
+            font-weight: bold; margin-bottom: 15px;
+        }
+        .step-card h4 { color: #cdd6f4; margin-bottom: 10px; font-size: 1.1rem; }
+        .step-card p { color: #a6adc8; font-size: 0.95rem; }
+
+        .flow-diagram { background: #181825; border-radius: 12px; padding: 30px; margin: 20px 0; text-align: center; }
+        .flow-row { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 15px; margin: 20px 0; }
+        .flow-box { background: #313244; border: 2px solid #89b4fa; border-radius: 10px; padding: 15px 25px; min-width: 140px; }
+        .flow-box.green { border-color: #a6e3a1; background: rgba(166, 227, 161, 0.1); }
+        .flow-box.purple { border-color: #cba6f7; background: rgba(203, 166, 247, 0.1); }
+        .flow-box.yellow { border-color: #f9e2af; background: rgba(249, 226, 175, 0.1); }
+        .flow-box p { color: #cdd6f4; font-weight: 500; margin: 0; }
+        .flow-arrow { font-size: 1.5rem; color: #6c7086; }
+
+        .feature-list { list-style: none; margin-top: 15px; }
+        .feature-list li { padding: 12px 0; padding-left: 35px; position: relative; border-bottom: 1px solid #313244; }
+        .feature-list li:last-child { border-bottom: none; }
+        .feature-list li::before { content: '✓'; position: absolute; left: 0; color: #a6e3a1; font-weight: bold; font-size: 1.1rem; }
+
+        .code-block {
+            background: #181825; border-radius: 8px; padding: 20px;
+            font-family: 'Monaco', 'Menlo', monospace; font-size: 0.9rem;
+            color: #a6e3a1; overflow-x: auto; margin: 15px 0; border: 1px solid #313244;
+        }
+
+        .info-box { background: rgba(137, 180, 250, 0.1); border: 1px solid #89b4fa; border-radius: 10px; padding: 20px; margin: 20px 0; }
+        .info-box.warning { background: rgba(249, 226, 175, 0.1); border-color: #f9e2af; }
+        .info-box.success { background: rgba(166, 227, 161, 0.1); border-color: #a6e3a1; }
+        .info-box h4 { color: #89b4fa; margin-bottom: 10px; }
+        .info-box.warning h4 { color: #f9e2af; }
+        .info-box.success h4 { color: #a6e3a1; }
+
+        .screenshot-mock { background: #181825; border-radius: 12px; overflow: hidden; margin: 20px 0; border: 1px solid #313244; }
+        .mock-nav { background: #1e1e2e; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #313244; }
+        .mock-nav-brand { color: #89b4fa; font-weight: bold; }
+        .mock-nav-links { display: flex; gap: 10px; }
+        .mock-nav-link { padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; color: #a6adc8; }
+        .mock-nav-link.active { background: #89b4fa; color: #1e1e2e; }
+        .mock-content { padding: 25px; }
+        .mock-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .mock-header h3 { color: #cdd6f4; font-size: 1.3rem; }
+        .mock-btn { padding: 8px 16px; background: #89b4fa; color: #1e1e2e; border-radius: 6px; font-size: 0.85rem; font-weight: 500; }
+        .mock-search { display: flex; gap: 10px; margin-bottom: 20px; }
+        .mock-search input { flex: 1; padding: 10px 15px; background: #1e1e2e; border: 1px solid #444; border-radius: 8px; color: #cdd6f4; font-size: 0.9rem; }
+        .mock-search select { padding: 10px 15px; background: #1e1e2e; border: 1px solid #444; border-radius: 8px; color: #cdd6f4; font-size: 0.9rem; }
+        .mock-card { background: #1e1e2e; border: 1px solid #444; border-radius: 10px; padding: 18px; margin-bottom: 12px; }
+        .mock-card h4 { color: #cdd6f4; margin-bottom: 8px; }
+        .mock-card p { color: #a6adc8; font-size: 0.9rem; margin: 0; }
+        .mock-badge { display: inline-block; padding: 3px 10px; background: rgba(137, 180, 250, 0.2); color: #89b4fa; border-radius: 20px; font-size: 0.8rem; margin-top: 10px; }
+        .mock-form { background: #1e1e2e; border: 1px solid #444; border-radius: 12px; padding: 25px; }
+        .mock-form-group { margin-bottom: 18px; }
+        .mock-form-group label { display: block; color: #a6adc8; font-size: 0.9rem; margin-bottom: 8px; }
+        .mock-form-group input, .mock-form-group textarea { width: 100%; padding: 12px; background: #181825; border: 1px solid #444; border-radius: 8px; color: #cdd6f4; font-size: 0.9rem; }
+        .mock-form-group textarea { height: 100px; resize: none; }
+        .mock-form-btns { display: flex; gap: 12px; }
+        .mock-form-btns button { padding: 10px 20px; border-radius: 8px; font-weight: 500; font-size: 0.9rem; border: none; cursor: default; }
+        .btn-primary { background: #89b4fa; color: #1e1e2e; }
+        .btn-secondary { background: #313244; color: #cdd6f4; }
+
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th { background: #313244; padding: 12px 15px; text-align: left; color: #cdd6f4; font-weight: 600; }
+        td { padding: 12px 15px; border-bottom: 1px solid #313244; color: #bac2de; }
+        td code { background: #181825; padding: 2px 6px; border-radius: 4px; font-family: monospace; color: #a6e3a1; }
+
+        .footer { text-align: center; padding: 40px 20px; color: #6c7086; border-top: 1px solid #313244; }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .section { padding: 25px; }
+            .flow-row { flex-direction: column; }
+            .flow-arrow { transform: rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+    <header class="hero">
+        <h1>Customer Support System</h1>
+        <p>A complete guide to understanding how everything works</p>
+    </header>
+
+    <div class="container">
+
+        <!-- What Is This? -->
+        <section class="section">
+            <h2><span class="emoji">💡</span> What Is This System?</h2>
+            <p>This is a <strong>Customer Support Question & Answer system</strong>. It works like a digital help desk where:</p>
+            <div class="step-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h4>Anyone can ask questions</h4>
+                    <p>Customers type their question and submit it. The question is saved and ready to be answered.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h4>Staff can answer questions</h4>
+                    <p>Support team sees unanswered questions and writes helpful answers.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h4>Everyone can browse answers</h4>
+                    <p>All answered questions appear in a list. People can search and find answers to common questions.</p>
+                </div>
+            </div>
+            <div class="info-box success">
+                <h4>Think of it like this...</h4>
+                <p>Imagine a bulletin board in a store. People write questions on sticky notes, staff write answers on the same notes, and everyone can read the board to find answers without asking again.</p>
+            </div>
+        </section>
+
+        <!-- The Three Pages -->
+        <section class="section">
+            <h2><span class="emoji">📄</span> The Three Pages</h2>
+
+            <h3>1. Q&A Page (/qa) — Browse All Questions</h3>
+            <p>This is the main page where you can see all questions and their answers.</p>
+            <div class="screenshot-mock">
+                <div class="mock-nav">
+                    <span class="mock-nav-brand">Support</span>
+                    <div class="mock-nav-links">
+                        <span class="mock-nav-link active">Q&A</span>
+                        <span class="mock-nav-link">Ask a Question</span>
+                        <span class="mock-nav-link">Unanswered</span>
+                    </div>
+                </div>
+                <div class="mock-content">
+                    <div class="mock-header">
+                        <h3>Q&A</h3>
+                        <span class="mock-btn">Ask a Question</span>
+                    </div>
+                    <div class="mock-search">
+                        <input type="text" placeholder="Search questions..." disabled>
+                        <select disabled><option>Newest First</option></select>
+                    </div>
+                    <div class="mock-card">
+                        <h4>How do I reset my password?</h4>
+                        <p>I forgot my password and need to reset it...</p>
+                        <span class="mock-badge">1 answer</span>
+                    </div>
+                    <div class="mock-card">
+                        <h4>What are your business hours?</h4>
+                        <p>Can someone tell me when you're open?</p>
+                        <span class="mock-badge">0 answers</span>
+                    </div>
+                </div>
+            </div>
+            <ul class="feature-list">
+                <li><strong>Search:</strong> Type in the search box to find questions by keyword</li>
+                <li><strong>Sort:</strong> Choose "Newest First", "Oldest First", or "Most Answers"</li>
+                <li><strong>Expand:</strong> Click any question to see its answers</li>
+                <li><strong>Ask button:</strong> Takes you to the question form</li>
+            </ul>
+
+            <h3>2. Ask a Question Page (/ask) — Submit New Questions</h3>
+            <p>This is where you write and submit your question.</p>
+            <div class="screenshot-mock">
+                <div class="mock-nav">
+                    <span class="mock-nav-brand">Support</span>
+                    <div class="mock-nav-links">
+                        <span class="mock-nav-link">Q&A</span>
+                        <span class="mock-nav-link active">Ask a Question</span>
+                        <span class="mock-nav-link">Unanswered</span>
+                    </div>
+                </div>
+                <div class="mock-content">
+                    <h3 style="color: #cdd6f4; margin-bottom: 20px;">Ask a Question</h3>
+                    <div class="mock-form">
+                        <div class="mock-form-group">
+                            <label>Title *</label>
+                            <input type="text" placeholder="What's your question?" disabled>
+                        </div>
+                        <div class="mock-form-group">
+                            <label>Details (optional)</label>
+                            <textarea placeholder="Provide more details about your question..." disabled></textarea>
+                        </div>
+                        <div class="mock-form-btns">
+                            <button class="btn-primary" disabled>Submit Question</button>
+                            <button class="btn-secondary" disabled>Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <ul class="feature-list">
+                <li><strong>Title (required):</strong> A short summary of your question</li>
+                <li><strong>Details (optional):</strong> Extra information to help staff understand</li>
+                <li><strong>Submit:</strong> Sends your question and takes you back to Q&A</li>
+                <li><strong>Cancel:</strong> Goes back without saving</li>
+            </ul>
+
+            <h3>3. Unanswered Page (/unanswered) — Answer Pending Questions</h3>
+            <p>This is for support staff. It shows only questions that haven't been answered yet.</p>
+            <div class="screenshot-mock">
+                <div class="mock-nav">
+                    <span class="mock-nav-brand">Support</span>
+                    <div class="mock-nav-links">
+                        <span class="mock-nav-link">Q&A</span>
+                        <span class="mock-nav-link">Ask a Question</span>
+                        <span class="mock-nav-link active">Unanswered</span>
+                    </div>
+                </div>
+                <div class="mock-content">
+                    <div class="mock-header">
+                        <div>
+                            <h3>Unanswered</h3>
+                            <p style="color: #6c7086; font-size: 0.9rem;">Questions waiting for answers</p>
+                        </div>
+                        <span class="mock-btn">Ask a Question</span>
+                    </div>
+                    <div class="mock-card">
+                        <h4>What are your business hours?</h4>
+                        <p style="margin-bottom: 15px;">Can someone tell me when you're open?</p>
+                        <textarea style="width: 100%; padding: 12px; background: #181825; border: 1px solid #444; border-radius: 8px; color: #cdd6f4; font-size: 0.9rem; height: 70px; margin-bottom: 10px;" placeholder="Write your answer..." disabled></textarea>
+                        <button disabled style="padding: 8px 16px; background: #a6e3a1; color: #1e1e2e; border-radius: 6px; font-size: 0.85rem; font-weight: 500; border: none;">Submit Answer</button>
+                    </div>
+                </div>
+            </div>
+            <ul class="feature-list">
+                <li><strong>Only unanswered questions</strong> appear here</li>
+                <li><strong>Inline answer form:</strong> Write your answer directly under the question</li>
+                <li><strong>Auto-refresh:</strong> After answering, the question disappears from this list</li>
+                <li><strong>Empty state:</strong> Shows a celebration message when all questions are answered</li>
+            </ul>
+        </section>
+
+        <!-- Complete Flow -->
+        <section class="section">
+            <h2><span class="emoji">🔄</span> How It All Connects</h2>
+            <p>Here's the complete flow from asking a question to seeing it answered:</p>
+            <div class="flow-diagram">
+                <div class="flow-row">
+                    <div class="flow-box green">
+                        <p>Customer opens<br><strong>/ask</strong> page</p>
+                    </div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-box purple">
+                        <p>Types question<br>& clicks Submit</p>
+                    </div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-box yellow">
+                        <p>Question saved<br>to database</p>
+                    </div>
+                </div>
+                <div class="flow-row">
+                    <div class="flow-box">
+                        <p>Redirected to<br><strong>/qa</strong> page</p>
+                    </div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-box green">
+                        <p>Staff sees it on<br><strong>/unanswered</strong></p>
+                    </div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-box purple">
+                        <p>Staff writes<br>an answer</p>
+                    </div>
+                </div>
+                <div class="flow-row">
+                    <div class="flow-box yellow">
+                        <p>Answer saved<br>to database</p>
+                    </div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-box green">
+                        <p>Now visible on<br><strong>/qa</strong> with answer!</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3>What Happens Behind the Scenes</h3>
+            <table>
+                <thead>
+                    <tr><th>You Do This</th><th>What the System Does</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Click "Submit Question"</td><td>Sends your text to the server → Server saves it in the database → Shows you the Q&A page</td></tr>
+                    <tr><td>Type in search box</td><td>Waits 0.3 seconds → Asks database for matching questions → Shows results</td></tr>
+                    <tr><td>Click on a question</td><td>Expands the card → Shows the answers below the question</td></tr>
+                    <tr><td>Click "Submit Answer"</td><td>Sends answer to server → Server links it to the question → Refreshes the list</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- The Technology -->
+        <section class="section">
+            <h2><span class="emoji">⚙️</span> The Technology (Simplified)</h2>
+            <p>You don't need to understand all this to use the system, but here's what powers it:</p>
+            <div class="step-grid">
+                <div class="step-card">
+                    <h4>Next.js — The Brain</h4>
+                    <p>The main program that handles web pages and talks to the database. It decides what to show you based on what you click.</p>
+                </div>
+                <div class="step-card">
+                    <h4>TypeScript — The Helper</h4>
+                    <p>A programming language that catches mistakes early. Like having a spell-checker for code — it prevents bugs before they happen.</p>
+                </div>
+                <div class="step-card">
+                    <h4>Tailwind CSS — The Designer</h4>
+                    <p>Handles all the visual design — colors, buttons, spacing. It's why the app looks good without hiring a designer.</p>
+                </div>
+                <div class="step-card">
+                    <h4>SQLite — The Filing Cabinet</h4>
+                    <p>Where all questions and answers are stored. It's a single file on your computer — simple and reliable.</p>
+                </div>
+            </div>
+            <div class="info-box">
+                <h4>Where Is the Data Stored?</h4>
+                <p>All your questions and answers are saved in a file called <code>customer_support.db</code> in the project folder. It's like a tiny Excel file that lives on your computer.</p>
+            </div>
+        </section>
+
+        <!-- File Structure -->
+        <section class="section">
+            <h2><span class="emoji">📁</span> What Each File Does</h2>
+            <table>
+                <thead>
+                    <tr><th>File / Folder</th><th>What It Does (Simple Terms)</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>lib/db.ts</code></td><td>Connects to the database and creates the tables. Like setting up a filing cabinet.</td></tr>
+                    <tr><td><code>app/api/questions/route.ts</code></td><td>Handles question requests — creating, listing, and searching questions.</td></tr>
+                    <tr><td><code>app/api/answers/route.ts</code></td><td>Handles answer requests — adding answers to questions.</td></tr>
+                    <tr><td><code>app/qa/page.tsx</code></td><td>The Q&A page — shows all questions with search and sort.</td></tr>
+                    <tr><td><code>app/ask/page.tsx</code></td><td>The form page — where you write and submit new questions.</td></tr>
+                    <tr><td><code>app/unanswered/page.tsx</code></td><td>Shows questions without answers — with forms to answer them.</td></tr>
+                    <tr><td><code>components/Navbar.tsx</code></td><td>The navigation bar at the top with links to all pages.</td></tr>
+                    <tr><td><code>components/QuestionCard.tsx</code></td><td>A reusable card that displays a question and its answers.</td></tr>
+                    <tr><td><code>components/SearchBar.tsx</code></td><td>The search box that lets you find questions by keyword.</td></tr>
+                    <tr><td><code>components/AnswerForm.tsx</code></td><td>The form for writing answers to questions.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- How to Run -->
+        <section class="section">
+            <h2><span class="emoji">🚀</span> How to Run the System</h2>
+            <p>Follow these steps to start the system on your computer:</p>
+
+            <div class="step-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h4>Open Terminal</h4>
+                    <p>Open the Terminal app (Mac) or Command Prompt (Windows). This is where you type commands.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h4>Navigate to the Folder</h4>
+                    <p>Type: <code>cd /path/to/customer_support</code> — replace with the actual folder path.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h4>Install Dependencies</h4>
+                    <p>Type: <code>npm install</code> — this downloads all the needed packages (first time only).</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h4>Start the System</h4>
+                    <p>Type: <code>npm run dev</code> — this starts the web server.</p>
+                </div>
+            </div>
+
+            <div class="code-block">
+# Open Terminal and run these commands:<br>
+cd /path/to/customer_support<br>
+npm install<br>
+npm run dev<br><br>
+# Then open your browser and go to:<br>
+http://localhost:3000
+            </div>
+
+            <div class="info-box success">
+                <h4>That's it!</h4>
+                <p>After running <code>npm run dev</code>, open your web browser and go to <strong>http://localhost:3000</strong>. You'll see the Q&A page and can start using the system!</p>
+            </div>
+        </section>
+
+        <!-- Future Plans -->
+        <section class="section">
+            <h2><span class="emoji">🔮</span> What's Coming Next</h2>
+            <p>The system is designed to grow. Here are the planned improvements:</p>
+            <div class="step-grid">
+                <div class="step-card">
+                    <h4>Authentication (Login System)</h4>
+                    <p>People will need to log in to ask or answer questions. This keeps the system secure and tracks who said what.</p>
+                </div>
+                <div class="step-card">
+                    <h4>Production Database</h4>
+                    <p>Right now, data lives on your computer. Later, we'll move it to a cloud database so it's accessible from anywhere and backed up automatically.</p>
+                </div>
+                <div class="step-card">
+                    <h4>Deploy to Vercel</h4>
+                    <p>The system will be hosted on Vercel — a website hosting service. Anyone with the link will be able to use it.</p>
+                </div>
+            </div>
+            <div class="info-box warning">
+                <h4>Important Note About SQLite</h4>
+                <p>The current database (SQLite) works perfectly on your computer, but it won't work on Vercel because Vercel's servers don't have a permanent file system. That's why we'll switch to a cloud database later.</p>
+            </div>
+        </section>
+
+        <!-- Quick Reference -->
+        <section class="section">
+            <h2><span class="emoji">📋</span> Quick Reference</h2>
+            <table>
+                <thead>
+                    <tr><th>Page</th><th>URL</th><th>Purpose</th><th>Who Uses It</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Q&A</td><td><code>/qa</code></td><td>Browse all questions and answers</td><td>Everyone</td></tr>
+                    <tr><td>Ask a Question</td><td><code>/ask</code></td><td>Submit a new question</td><td>Customers</td></tr>
+                    <tr><td>Unanswered</td><td><code>/unanswered</code></td><td>Answer pending questions</td><td>Support Staff</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+    </div>
+
+    <footer class="footer">
+        <p>Customer Support System — Implementation Guide v1.0</p>
+    </footer>
+</body>
+</html>
