@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
+import { getQueryEmbedding, getDocumentEmbedding } from '@/lib/embeddings';
 
 function serialize(rows: Record<string, unknown>[]) {
   return rows.map((row) => {
     const out: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(row)) {
+      if (key === 'embedding') continue;
       if (typeof value === 'bigint') {
         out[key] = Number(value);
       } else if (value instanceof Date) {
@@ -22,6 +24,31 @@ export async function GET(request: NextRequest) {
   const search = searchParams.get('search') || '';
   const sort = searchParams.get('sort') || 'newest';
   const unanswered = searchParams.get('unanswered') === 'true';
+  const similar = searchParams.get('similar') || '';
+
+  if (similar) {
+    try {
+      const embedding = await getQueryEmbedding(similar);
+      const embeddingStr = `[${embedding.join(',')}]`;
+
+      const result = await sql.query(
+        `SELECT q.*, CAST(COUNT(a.id) AS INTEGER) as answer_count,
+         1 - (q.embedding <=> $1::vector) as similarity
+         FROM questions q
+         LEFT JOIN answers a ON q.id = a.question_id
+         WHERE q.embedding IS NOT NULL
+         GROUP BY q.id
+         ORDER BY similarity DESC
+         LIMIT 5`,
+        [embeddingStr]
+      );
+
+      return NextResponse.json(serialize(result.rows ?? result));
+    } catch (error) {
+      console.error('Vector search error:', error);
+      return NextResponse.json({ error: 'Vector search failed' }, { status: 500 });
+    }
+  }
 
   let query = `
     SELECT q.*, CAST(COUNT(a.id) AS INTEGER) as answer_count
@@ -73,10 +100,28 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Title is required' }, { status: 400 });
   }
 
-  const result = await sql.query(
-    'INSERT INTO questions (title, body) VALUES ($1, $2) RETURNING *',
-    [title.trim(), questionBody?.trim() || null]
-  );
+  const textToEmbed = `${title.trim()} ${questionBody?.trim() || ''}`.trim();
+
+  let embeddingStr = null;
+  try {
+    const embedding = await getDocumentEmbedding(textToEmbed);
+    embeddingStr = `[${embedding.join(',')}]`;
+  } catch (error) {
+    console.error('Failed to generate embedding:', error);
+  }
+
+  let result;
+  if (embeddingStr) {
+    result = await sql.query(
+      'INSERT INTO questions (title, body, embedding) VALUES ($1, $2, $3::vector) RETURNING *',
+      [title.trim(), questionBody?.trim() || null, embeddingStr]
+    );
+  } else {
+    result = await sql.query(
+      'INSERT INTO questions (title, body) VALUES ($1, $2) RETURNING *',
+      [title.trim(), questionBody?.trim() || null]
+    );
+  }
 
   return NextResponse.json(serialize(result.rows ?? result)[0], { status: 201 });
 }
