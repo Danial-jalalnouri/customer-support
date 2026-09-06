@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Support System - Implementation Plan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            font-size: 1.8rem;
+            color: #667eea;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card h2::before {
+            content: '';
+            width: 8px;
+            height: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+        }
+
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .tech-item {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .tech-item .icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .tech-item h3 {
+            font-size: 1.1rem;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .tech-item p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .structure {
+            background: #1e1e2e;
+            color: #a6e3a1;
+            padding: 25px;
+            border-radius: 12px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            overflow-x: auto;
+        }
+
+        .structure .comment {
+            color: #6c7086;
+        }
+
+        .structure .folder {
+            color: #89b4fa;
+        }
+
+        .structure .file {
+            color: #f9e2af;
+        }
+
+        .schema-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .schema-table {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .schema-table h3 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+        }
+
+        .schema-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .schema-table th {
+            background: #f5f7fa;
+            padding: 12px 20px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .schema-table td {
+            padding: 12px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #555;
+        }
+
+        .schema-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .pages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .page-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .page-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+
+        .page-card .route {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .page-card h3 {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .page-card p {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+
+        .page-card ul {
+            list-style: none;
+        }
+
+        .page-card li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .page-card li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .api-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .api-method {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-right: 10px;
+        }
+
+        .api-method.get {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .api-method.post {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .api-path {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .api-description {
+            margin-top: 10px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .api-params {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+
+        .api-params li {
+            color: #555;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+        }
+
+        .api-params code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+
+        .components-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .component-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .component-card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .component-card p {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+            padding-left: 20px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -25px;
+            top: 5px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border: 3px solid #667eea;
+            border-radius: 50%;
+        }
+
+        .timeline-item h4 {
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+
+        .timeline-item p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .notes {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .notes h3 {
+            color: #856404;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notes ul {
+            list-style: none;
+        }
+
+        .notes li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            color: #856404;
+        }
+
+        .notes li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            color: white;
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+        }
+
+        .template-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .template-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+
+        .template-number {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .template-preview {
+            height: 140px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+
+        .template-preview .preview-nav {
+            height: 25px;
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .template-preview .preview-content {
+            padding: 10px;
+        }
+
+        .template-preview .preview-line {
+            height: 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .template-preview .preview-line.long {
+            width: 90%;
+            background: #ddd;
+        }
+
+        .template-preview .preview-line.medium {
+            width: 70%;
+            background: #ddd;
+        }
+
+        .template-preview .preview-card-small {
+            height: 30px;
+            border-radius: 6px;
+            margin-top: 10px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+        }
+
+        /* Template 1: Minimalist */
+        .template-minimal {
+            background: #fafafa;
+        }
+
+        /* Template 2: Gradient */
+        .gradient-nav {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            border: none !important;
+        }
+
+        .gradient-line {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            opacity: 0.6;
+        }
+
+        .gradient-card {
+            border: 2px solid #667eea !important;
+            background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%) !important;
+        }
+
+        /* Template 3: Dark */
+        .dark-nav {
+            background: #1e1e2e !important;
+            border: none !important;
+        }
+
+        .dark-content {
+            background: #1e1e2e;
+        }
+
+        .dark-line {
+            background: #444 !important;
+        }
+
+        .dark-card {
+            background: #2d2d44 !important;
+            border: 1px solid #444 !important;
+        }
+
+        /* Template 4: Material */
+        .material-nav {
+            background: #3f51b5 !important;
+            border: none !important;
+        }
+
+        .material-line {
+            background: #3f51b5 !important;
+            opacity: 0.5;
+        }
+
+        .material-card {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+            border: none !important;
+        }
+
+        /* Template 5: Sidebar */
+        .template-sidebar {
+            display: flex;
+            background: #f5f5f5;
+        }
+
+        .preview-sidebar {
+            width: 40px;
+            background: #2c3e50;
+        }
+
+        .preview-content-with-sidebar {
+            flex: 1;
+            padding: 10px;
+        }
+
+        .sidebar-line {
+            background: #bdc3c7 !important;
+        }
+
+        .sidebar-card {
+            background: #fff !important;
+            border: 1px solid #bdc3c7 !important;
+        }
+
+        .template-card h3 {
+            font-size: 1rem;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .template-card p {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .template-card ul {
+            list-style: none;
+            font-size: 0.75rem;
+        }
+
+        .template-card li {
+            padding: 3px 0;
+            color: #888;
+        }
+
+        .template-card li::before {
+            content: '• ';
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .card {
+                padding: 25px;
+            }
+
+            .card h2 {
+                font-size: 1.4rem;
+            }
+
+            .schema-grid,
+            .pages-grid,
+            .components-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Customer Support System</h1>
+            <p>Implementation Plan - Next.js + SQLite</p>
+        </header>
+
+        <!-- Tech Stack -->
+        <section class="card">
+            <h2>Tech Stack</h2>
+            <div class="tech-stack">
+                <div class="tech-item">
+                    <div class="icon">⚛️</div>
+                    <h3>Next.js 14+</h3>
+                    <p>App Router, React Framework</p>
+                </div>
+                <div class="tech-item">
+                    <div class="icon">🔷</div>
+                    <h3>TypeScript</h3>
+                    <p>Type-safe development</p>
+                </div>
+                <div class="tech-item">
+                    <div class="icon">🎨</div>
+                    <h3>Tailwind CSS</h3>
+                    <p>Utility-first styling</p>
+                </div>
+                <div class="tech-item">
+                    <div class="icon">🗃️</div>
+                    <h3>SQLite</h3>
+                    <p>Local database (better-sqlite3)</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Project Structure -->
+        <section class="card">
+            <h2>Project Structure</h2>
+            <div class="structure">
+<pre><span class="folder">customer_support/</span>
+├── <span class="folder">app/</span>
+│   ├── <span class="file">layout.tsx</span>                    <span class="comment"># Root layout with navigation</span>
+│   ├── <span class="file">page.tsx</span>                      <span class="comment"># Home → redirects to /qa</span>
+│   │
+│   ├── <span class="folder">qa/</span>
+│   │   └── <span class="file">page.tsx</span>                  <span class="comment"># Q&A listing (search + sort)</span>
+│   │
+│   ├── <span class="folder">ask/</span>
+│   │   └── <span class="file">page.tsx</span>                  <span class="comment"># Submit a new question</span>
+│   │
+│   ├── <span class="folder">unanswered/</span>
+│   │   └── <span class="file">page.tsx</span>                  <span class="comment"># Unanswered questions + answer form</span>
+│   │
+│   └── <span class="folder">api/</span>
+│       ├── <span class="folder">questions/</span>
+│       │   └── <span class="file">route.ts</span>              <span class="comment"># GET (list/search/sort) + POST (create)</span>
+│       │
+│       └── <span class="folder">answers/</span>
+│           └── <span class="file">route.ts</span>              <span class="comment"># POST (create answer for a question)</span>
+│
+├── <span class="folder">lib/</span>
+│   └── <span class="file">db.ts</span>                         <span class="comment"># SQLite connection + schema init</span>
+│
+├── <span class="folder">components/</span>
+│   ├── <span class="file">Navbar.tsx</span>                    <span class="comment"># Navigation bar</span>
+│   ├── <span class="file">QuestionCard.tsx</span>              <span class="comment"># Reusable question display</span>
+│   ├── <span class="file">AnswerForm.tsx</span>                <span class="comment"># Form to submit an answer</span>
+│   └── <span class="file">SearchBar.tsx</span>                 <span class="comment"># Search input component</span>
+│
+├── <span class="file">package.json</span>
+├── <span class="file">tailwind.config.ts</span>
+├── <span class="file">tsconfig.json</span>
+└── <span class="file">next.config.js</span></pre>
+            </div>
+        </section>
+
+        <!-- Database Schema -->
+        <section class="card">
+            <h2>Database Schema</h2>
+            <div class="schema-grid">
+                <div class="schema-table">
+                    <h3>📋 questions</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Column</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>id</strong></td>
+                                <td>INTEGER</td>
+                                <td>Primary key, auto-increment</td>
+                            </tr>
+                            <tr>
+                                <td><strong>title</strong></td>
+                                <td>TEXT</td>
+                                <td>Question title, not null</td>
+                            </tr>
+                            <tr>
+                                <td><strong>body</strong></td>
+                                <td>TEXT</td>
+                                <td>Question body/description</td>
+                            </tr>
+                            <tr>
+                                <td><strong>created_at</strong></td>
+                                <td>TEXT</td>
+                                <td>ISO timestamp, default now</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="schema-table">
+                    <h3>💬 answers</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Column</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>id</strong></td>
+                                <td>INTEGER</td>
+                                <td>Primary key, auto-increment</td>
+                            </tr>
+                            <tr>
+                                <td><strong>question_id</strong></td>
+                                <td>INTEGER</td>
+                                <td>Foreign key → questions.id</td>
+                            </tr>
+                            <tr>
+                                <td><strong>body</strong></td>
+                                <td>TEXT</td>
+                                <td>Answer text, not null</td>
+                            </tr>
+                            <tr>
+                                <td><strong>created_at</strong></td>
+                                <td>TEXT</td>
+                                <td>ISO timestamp, default now</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pages & Features -->
+        <section class="card">
+            <h2>Pages & Features</h2>
+            <div class="pages-grid">
+                <div class="page-card">
+                    <span class="route">/qa</span>
+                    <h3>Q&A Page</h3>
+                    <p>Display all questions with their answers</p>
+                    <ul>
+                        <li>Search bar to filter questions</li>
+                        <li>Sort: Newest, Oldest, Most answers</li>
+                        <li>Question cards with answer count</li>
+                        <li>Expandable to show answers</li>
+                    </ul>
+                </div>
+                <div class="page-card">
+                    <span class="route">/ask</span>
+                    <h3>Submit Question</h3>
+                    <p>Write and submit a new question</p>
+                    <ul>
+                        <li>Title field (required)</li>
+                        <li>Body textarea (optional)</li>
+                        <li>Submit → POST to API</li>
+                        <li>Redirect to /qa on success</li>
+                    </ul>
+                </div>
+                <div class="page-card">
+                    <span class="route">/unanswered</span>
+                    <h3>Unanswered Questions</h3>
+                    <p>Questions waiting for answers</p>
+                    <ul>
+                        <li>List questions with 0 answers</li>
+                        <li>Inline answer form per question</li>
+                        <li>Submit answer → POST to API</li>
+                        <li>Auto-refresh after answering</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- API Routes -->
+        <section class="card">
+            <h2>API Routes</h2>
+            
+            <div class="api-section">
+                <span class="api-method get">GET</span>
+                <span class="api-path">/api/questions</span>
+                <p class="api-description">Fetch questions with optional filtering and sorting</p>
+                <ul class="api-params">
+                    <li><code>search</code> — Filter by title or body text</li>
+                    <li><code>sort</code> — <code>newest</code> | <code>oldest</code> | <code>most_answers</code></li>
+                    <li><code>unanswered</code> — Return only questions with 0 answers</li>
+                </ul>
+            </div>
+
+            <div class="api-section">
+                <span class="api-method post">POST</span>
+                <span class="api-path">/api/questions</span>
+                <p class="api-description">Create a new question</p>
+                <ul class="api-params">
+                    <li><code>title</code> — Question title (required)</li>
+                    <li><code>body</code> — Question body (optional)</li>
+                </ul>
+            </div>
+
+            <div class="api-section">
+                <span class="api-method post">POST</span>
+                <span class="api-path">/api/answers</span>
+                <p class="api-description">Add an answer to a question</p>
+                <ul class="api-params">
+                    <li><code>question_id</code> — ID of the question to answer</li>
+                    <li><code>body</code> — Answer text (required)</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Components -->
+        <section class="card">
+            <h2>Components</h2>
+            <div class="components-grid">
+                <div class="component-card">
+                    <h4>Navbar.tsx</h4>
+                    <p>Navigation links with active state highlighting for Q&A, Ask, and Unanswered pages.</p>
+                </div>
+                <div class="component-card">
+                    <h4>QuestionCard.tsx</h4>
+                    <p>Reusable card displaying question title, body preview, date, and answer count badge. Expandable.</p>
+                </div>
+                <div class="component-card">
+                    <h4>AnswerForm.tsx</h4>
+                    <p>Form with textarea for submitting answers. Calls API and refreshes parent component.</p>
+                </div>
+                <div class="component-card">
+                    <h4>SearchBar.tsx</h4>
+                    <p>Controlled input with debounced onChange for searching questions.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Implementation Timeline -->
+        <section class="card">
+            <h2>Implementation Timeline</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>Step 1</h4>
+                    <p>Initialize Next.js project with TypeScript + Tailwind CSS</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Step 2</h4>
+                    <p>Install dependencies: better-sqlite3, @types/better-sqlite3</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Step 3</h4>
+                    <p>Create lib/db.ts — SQLite setup + schema initialization</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Step 4</h4>
+                    <p>Create API routes (/api/questions, /api/answers)</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Step 5</h4>
+                    <p>Create shared components (Navbar, QuestionCard, AnswerForm, SearchBar)</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Step 6</h4>
+                    <p>Create /qa page with search and sort functionality</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Step 7</h4>
+                    <p>Create /ask page with question form</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Step 8</h4>
+                    <p>Create /unanswered page with answer forms</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Step 9</h4>
+                    <p>Create root layout with Navbar</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Step 10</h4>
+                    <p>Test complete flow: ask → see in QA → see in unanswered → answer → see in QA with answer</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Notes -->
+        <section class="card">
+            <h2>Important Notes</h2>
+            <div class="notes">
+                <h3>⚠️ Deployment Considerations</h3>
+                <ul>
+                    <li>SQLite works locally but <strong>not on Vercel</strong> (stateless serverless functions)</li>
+                    <li>For production: swap to Vercel Postgres, Turso, or Supabase</li>
+                    <li>Database abstraction layer will make the swap easy</li>
+                    <li>No authentication for now — all operations are open</li>
+                    <li>Future: Add Clerk authentication</li>
+                    <li>SQLite file stored as customer_support.db in project root</li>
+                    <li>Database auto-creates tables on first API call</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Template Suggestions -->
+        <section class="card">
+            <h2>Choose a Template Style</h2>
+            <p style="color: #666; margin-bottom: 30px;">Select one of these 5 UI templates for implementation</p>
+            
+            <div class="templates-grid">
+                <!-- Template 1 -->
+                <div class="template-card" onclick="selectTemplate(1)">
+                    <div class="template-number">1</div>
+                    <div class="template-preview template-minimal">
+                        <div class="preview-nav"></div>
+                        <div class="preview-content">
+                            <div class="preview-line long"></div>
+                            <div class="preview-line medium"></div>
+                            <div class="preview-card-small"></div>
+                            <div class="preview-card-small"></div>
+                        </div>
+                    </div>
+                    <h3>Minimalist Clean</h3>
+                    <p>Crisp white background, thin borders, subtle shadows. Maximum whitespace, elegant typography.</p>
+                    <ul>
+                        <li>Simple & professional</li>
+                        <li>Easy to read</li>
+                        <li>Focus on content</li>
+                    </ul>
+                </div>
+
+                <!-- Template 2 -->
+                <div class="template-card" onclick="selectTemplate(2)">
+                    <div class="template-number">2</div>
+                    <div class="template-preview template-gradient">
+                        <div class="preview-nav gradient-nav"></div>
+                        <div class="preview-content">
+                            <div class="preview-line long gradient-line"></div>
+                            <div class="preview-line medium gradient-line"></div>
+                            <div class="preview-card-small gradient-card"></div>
+                            <div class="preview-card-small gradient-card"></div>
+                        </div>
+                    </div>
+                    <h3>Gradient Modern</h3>
+                    <p>Vibrant gradients (blue-purple), rounded corners, soft shadows. Modern & eye-catching.</p>
+                    <ul>
+                        <li>Colorful & dynamic</li>
+                        <li>Modern feel</li>
+                        <li>Memorable</li>
+                    </ul>
+                </div>
+
+                <!-- Template 3 -->
+                <div class="template-card" onclick="selectTemplate(3)">
+                    <div class="template-number">3</div>
+                    <div class="template-preview template-dark">
+                        <div class="preview-nav dark-nav"></div>
+                        <div class="preview-content dark-content">
+                            <div class="preview-line long dark-line"></div>
+                            <div class="preview-line medium dark-line"></div>
+                            <div class="preview-card-small dark-card"></div>
+                            <div class="preview-card-small dark-card"></div>
+                        </div>
+                    </div>
+                    <h3>Dark Mode</h3>
+                    <p>Deep dark backgrounds, neon accents, high contrast. Sleek & developer-friendly.</p>
+                    <ul>
+                        <li>Easy on eyes</li>
+                        <li>Trendy aesthetic</li>
+                        <li>Reduces glare</li>
+                    </ul>
+                </div>
+
+                <!-- Template 4 -->
+                <div class="template-card" onclick="selectTemplate(4)">
+                    <div class="template-number">4</div>
+                    <div class="template-preview template-material">
+                        <div class="preview-nav material-nav"></div>
+                        <div class="preview-content">
+                            <div class="preview-line long material-line"></div>
+                            <div class="preview-line medium material-line"></div>
+                            <div class="preview-card-small material-card"></div>
+                            <div class="preview-card-small material-card"></div>
+                        </div>
+                    </div>
+                    <h3>Material Design</h3>
+                    <p>Elevated cards, bold colors, ripple effects. Google-inspired, familiar & accessible.</p>
+                    <ul>
+                        <li>Industry standard</li>
+                        <li>Highly accessible</li>
+                        <li>Intuitive UX</li>
+                    </ul>
+                </div>
+
+                <!-- Template 5 -->
+                <div class="template-card" onclick="selectTemplate(5)">
+                    <div class="template-number">5</div>
+                    <div class="template-preview template-sidebar">
+                        <div class="preview-sidebar"></div>
+                        <div class="preview-content-with-sidebar">
+                            <div class="preview-line long sidebar-line"></div>
+                            <div class="preview-line medium sidebar-line"></div>
+                            <div class="preview-card-small sidebar-card"></div>
+                        </div>
+                    </div>
+                    <h3>Sidebar Layout</h3>
+                    <p>Fixed left sidebar navigation, main content area. Professional dashboard style.</p>
+                    <ul>
+                        <li>Easy navigation</li>
+                        <li>Dashboard feel</li>
+                        <li>Scalable design</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="selected-template" style="display: none; margin-top: 30px; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white; text-align: center;">
+                <h3 id="selected-name"></h3>
+                <p id="selected-desc"></p>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>Customer Support System — Implementation Plan v1.0</p>
+        </footer>
+    </div>
+
+    <script>
+        function selectTemplate(num) {
+            const templates = {
+                1: { name: 'Minimalist Clean', desc: 'Selected: Simple, professional, content-focused design' },
+                2: { name: 'Gradient Modern', desc: 'Selected: Vibrant gradients, modern & eye-catching design' },
+                3: { name: 'Dark Mode', desc: 'Selected: Sleek dark theme, developer-friendly aesthetic' },
+                4: { name: 'Material Design', desc: 'Selected: Google-inspired, accessible & familiar design' },
+                5: { name: 'Sidebar Layout', desc: 'Selected: Dashboard-style with fixed sidebar navigation' }
+            };
+
+            document.querySelectorAll('.template-card').forEach(card => {
+                card.style.transform = 'scale(1)';
+                card.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
+            });
+
+            const selectedCard = document.querySelector(`.template-card:nth-child(${num})`);
+            selectedCard.style.transform = 'scale(1.02)';
+            selectedCard.style.boxShadow = '0 10px 40px rgba(102, 126, 234, 0.4)';
+
+            document.getElementById('selected-template').style.display = 'block';
+            document.getElementById('selected-name').textContent = templates[num].name;
+            document.getElementById('selected-desc').textContent = templates[num].desc;
+        }
+    </script>
+</body>
+</html>
