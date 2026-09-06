@@ -505,6 +505,147 @@ http://localhost:3000
             </table>
         </section>
 
+        <!-- Developer Q&A -->
+        <section class="section">
+            <h2><span class="emoji">🧑‍💻</span> Developer Q&A — New Team Member Guide</h2>
+            <p>Questions a new developer might ask when joining this project:</p>
+
+            <div class="qa-item" style="margin-bottom: 30px;">
+                <div class="qa-question" style="background: #313244; padding: 15px 20px; border-radius: 10px 10px 0 0; border-left: 4px solid #89b4fa;">
+                    <strong style="color: #89b4fa;">Q:</strong> <span style="color: #cdd6f4;">How do I run the app locally?</span>
+                </div>
+                <div class="qa-answer" style="background: #181825; padding: 15px 20px; border-radius: 0 0 10px 10px; border-left: 4px solid #a6e3a1;">
+                    <strong style="color: #a6e3a1;">A:</strong> <span style="color: #bac2de;">Run <code>npm install</code> to install dependencies, then <code>npm run dev</code> to start the development server. Open <code>http://localhost:3000</code> in your browser. The app automatically connects to the Neon cloud database — no local database setup needed.</span>
+                </div>
+            </div>
+
+            <div class="qa-item" style="margin-bottom: 30px;">
+                <div class="qa-question" style="background: #313244; padding: 15px 20px; border-radius: 10px 10px 0 0; border-left: 4px solid #89b4fa;">
+                    <strong style="color: #89b4fa;">Q:</strong> <span style="color: #cdd6f4;">Where is the database connection configured?</span>
+                </div>
+                <div class="qa-answer" style="background: #181825; padding: 15px 20px; border-radius: 0 0 10px 10px; border-left: 4px solid #a6e3a1;">
+                    <strong style="color: #a6e3a1;">A:</strong> <span style="color: #bac2de;">The connection string is in <code>.env.local</code> as the <code>DATABASE_URL</code> environment variable. The database driver is set up in <code>lib/db.ts</code> using <code>@neondatabase/serverless</code>. Next.js automatically loads <code>.env.local</code> when the app starts.</span>
+                </div>
+            </div>
+
+            <div class="qa-item" style="margin-bottom: 30px;">
+                <div class="qa-question" style="background: #313244; padding: 15px 20px; border-radius: 10px 10px 0 0; border-left: 4px solid #89b4fa;">
+                    <strong style="color: #89b4fa;">Q:</strong> <span style="color: #cdd6f4;">How do I add a new API endpoint?</span>
+                </div>
+                <div class="qa-answer" style="background: #181825; padding: 15px 20px; border-radius: 0 0 10px 10px; border-left: 4px solid #a6e3a1;">
+                    <strong style="color: #a6e3a1;">A:</strong> <span style="color: #bac2de;">Create a new folder under <code>app/api/</code> with a <code>route.ts</code> file. Export functions named <code>GET</code>, <code>POST</code>, etc. Use the <code>sql</code> function from <code>lib/db.ts</code> to query the database. For example, <code>app/api/questions/route.ts</code> handles <code>/api/questions</code>.</span>
+                </div>
+            </div>
+
+            <div class="qa-item" style="margin-bottom: 30px;">
+                <div class="qa-question" style="background: #313244; padding: 15px 20px; border-radius: 10px 10px 0 0; border-left: 4px solid #89b4fa;">
+                    <strong style="color: #89b4fa;">Q:</strong> <span style="color: #cdd6f4;">Why do we use <code>$1, $2</code> instead of <code>?</code> in SQL queries?</span>
+                </div>
+                <div class="qa-answer" style="background: #181825; padding: 15px 20px; border-radius: 0 0 10px 10px; border-left: 4px solid #a6e3a1;">
+                    <strong style="color: #a6e3a1;">A:</strong> <span style="color: #bac2de;">That's PostgreSQL syntax. SQLite uses <code>?</code> for placeholders, but PostgreSQL uses numbered placeholders like <code>$1</code>, <code>$2</code>, etc. Since we migrated to Neon (PostgreSQL), we use the PostgreSQL style. Always use placeholders — never concatenate user input directly into SQL strings.</span>
+                </div>
+            </div>
+
+            <div class="qa-item" style="margin-bottom: 30px;">
+                <div class="qa-question" style="background: #313244; padding: 15px 20px; border-radius: 10px 10px 0 0; border-left: 4px solid #89b4fa;">
+                    <strong style="color: #89b4fa;">Q:</strong> <span style="color: #cdd6f4;">Why does the questions API have a <code>serialize</code> function?</span>
+                </div>
+                <div class="qa-answer" style="background: #181825; padding: 15px 20px; border-radius: 0 0 10px 10px; border-left: 4px solid #a6e3a1;">
+                    <strong style="color: #a6e3a1;">A:</strong> <span style="color: #bac2de;">Neon's serverless driver returns some values as JavaScript types that can't be JSON-serialized directly — specifically <code>BigInt</code> (for counts) and <code>Date</code> objects (for timestamps). The <code>serialize</code> function converts these to regular numbers and ISO strings before sending them to the browser.</span>
+                </div>
+            </div>
+
+            <div class="qa-item" style="margin-bottom: 30px;">
+                <div class="qa-question" style="background: #313244; padding: 15px 20px; border-radius: 10px 10px 0 0; border-left: 4px solid #89b4fa;">
+                    <strong style="color: #89b4fa;">Q:</strong> <span style="color: #cdd6f4;">How does the search feature work?</span>
+                </div>
+                <div class="qa-answer" style="background: #181825; padding: 15px 20px; border-radius: 0 0 10px 10px; border-left: 4px solid #a6e3a1;">
+                    <strong style="color: #a6e3a1;">A:</strong> <span style="color: #bac2de;">When you type in the search box, the <code>SearchBar</code> component waits 300ms (debounce), then calls the <code>/api/questions?search=your+text</code> endpoint. The API uses PostgreSQL's <code>ILIKE</code> operator to find questions where the title or body contains the search text (case-insensitive). Results update in real-time.</span>
+                </div>
+            </div>
+
+            <div class="qa-item" style="margin-bottom: 30px;">
+                <div class="qa-question" style="background: #313244; padding: 15px 20px; border-radius: 10px 10px 0 0; border-left: 4px solid #89b4fa;">
+                    <strong style="color: #89b4fa;">Q:</strong> <span style="color: #cdd6f4;">How do answers get linked to questions?</span>
+                </div>
+                <div class="qa-answer" style="background: #181825; padding: 15px 20px; border-radius: 0 0 10px 10px; border-left: 4px solid #a6e3a1;">
+                    <strong style="color: #a6e3a1;">A:</strong> <span style="color: #bac2de;">Each answer has a <code>question_id</code> column that references the <code>id</code> of a question. This is a foreign key relationship. When you submit an answer, the <code>POST /api/answers</code> endpoint saves it with the question's ID. When viewing questions, the API uses a <code>LEFT JOIN</code> to count how many answers each question has.</span>
+                </div>
+            </div>
+
+            <div class="qa-item" style="margin-bottom: 30px;">
+                <div class="qa-question" style="background: #313244; padding: 15px 20px; border-radius: 10px 10px 0 0; border-left: 4px solid #89b4fa;">
+                    <strong style="color: #89b4fa;">Q:</strong> <span style="color: #cdd6f4;">Why is the home page (<code>/</code>) empty?</span>
+                </div>
+                <div class="qa-answer" style="background: #181825; padding: 15px 20px; border-radius: 0 0 10px 10px; border-left: 4px solid #a6e3a1;">
+                    <strong style="color: #a6e3a1;">A:</strong> <span style="color: #bac2de;">The root page (<code>app/page.tsx</code>) uses Next.js <code>redirect()</code> to send users directly to <code>/qa</code>. This way, the Q&A page is the first thing users see. If you want a landing page instead, replace the redirect with your own component.</span>
+                </div>
+            </div>
+
+            <div class="qa-item" style="margin-bottom: 30px;">
+                <div class="qa-question" style="background: #313244; padding: 15px 20px; border-radius: 10px 10px 0 0; border-left: 4px solid #89b4fa;">
+                    <strong style="color: #89b4fa;">Q:</strong> <span style="color: #cdd6f4;">How do I add a new page to the app?</span>
+                </div>
+                <div class="qa-answer" style="background: #181825; padding: 15px 20px; border-radius: 0 0 10px 10px; border-left: 4px solid #a6e3a1;">
+                    <strong style="color: #a6e3a1;">A:</strong> <span style="color: #bac2de;">Create a new folder under <code>app/</code> (e.g., <code>app/faq/</code>) and add a <code>page.tsx</code> file inside it. The file path becomes the URL — so <code>app/faq/page.tsx</code> becomes <code>/faq</code>. Don't forget to add a link in the <code>components/Navbar.tsx</code> file so users can navigate there.</span>
+                </div>
+            </div>
+
+            <div class="qa-item" style="margin-bottom: 30px;">
+                <div class="qa-question" style="background: #313244; padding: 15px 20px; border-radius: 10px 10px 0 0; border-left: 4px solid #89b4fa;">
+                    <strong style="color: #89b4fa;">Q:</strong> <span style="color: #cdd6f4;">What's the difference between <code>'use client'</code> and server components?</span>
+                </div>
+                <div class="qa-answer" style="background: #181825; padding: 15px 20px; border-radius: 0 0 10px 10px; border-left: 4px solid #a6e3a1;">
+                    <strong style="color: #a6e3a1;">A:</strong> <span style="color: #bac2de;">Pages and components with <code>'use client'</code> at the top run in the browser — they can use <code>useState</code>, <code>useEffect</code>, event handlers, etc. Server components (no <code>'use client'</code>) run on the server and can't use hooks. Our pages use <code>'use client'</code> because they need interactivity (forms, search, expanding cards).</span>
+                </div>
+            </div>
+
+            <div class="qa-item" style="margin-bottom: 30px;">
+                <div class="qa-question" style="background: #313244; padding: 15px 20px; border-radius: 10px 10px 0 0; border-left: 4px solid #89b4fa;">
+                    <strong style="color: #89b4fa;">Q:</strong> <span style="color: #cdd6f4;">How do I modify the database schema?</span>
+                </div>
+                <div class="qa-answer" style="background: #181825; padding: 15px 20px; border-radius: 0 0 10px 10px; border-left: 4px solid #a6e3a1;">
+                    <strong style="color: #a6e3a1;">A:</strong> <span style="color: #bac2de;">You can run SQL directly against the Neon database. Use the Neon Dashboard web interface, or connect with a tool like DBeaver or psql using the connection string from <code>.env.local</code>. For example, to add a column: <code>ALTER TABLE questions ADD COLUMN category TEXT;</code>. Always back up data before schema changes.</span>
+                </div>
+            </div>
+
+            <div class="qa-item" style="margin-bottom: 30px;">
+                <div class="qa-question" style="background: #313244; padding: 15px 20px; border-radius: 10px 10px 0 0; border-left: 4px solid #89b4fa;">
+                    <strong style="color: #89b4fa;">Q:</strong> <span style="color: #cdd6f4;">Why does the QuestionCard fetch answers only when expanded?</span>
+                </div>
+                <div class="qa-answer" style="background: #181825; padding: 15px 20px; border-radius: 0 0 10px 10px; border-left: 4px solid #a6e3a1;">
+                    <strong style="color: #a6e3a1;">A:</strong> <span style="color: #bac2de;">This is called "lazy loading." If we fetched all answers for all questions on page load, it would be slow and waste bandwidth. Instead, we only fetch answers when the user clicks to expand a question. The <code>answersFetched</code> flag prevents re-fetching if they collapse and re-expand the same question.</span>
+                </div>
+            </div>
+
+            <div class="qa-item" style="margin-bottom: 30px;">
+                <div class="qa-question" style="background: #313244; padding: 15px 20px; border-radius: 10px 10px 0 0; border-left: 4px solid #89b4fa;">
+                    <strong style="color: #89b4fa;">Q:</strong> <span style="color: #cdd6f4;">How do I deploy this to production?</span>
+                </div>
+                <div class="qa-answer" style="background: #181825; padding: 15px 20px; border-radius: 0 0 10px 10px; border-left: 4px solid #a6e3a1;">
+                    <strong style="color: #a6e3a1;">A:</strong> <span style="color: #bac2de;">Push your code to GitHub, then connect the repo to Vercel. Set the <code>DATABASE_URL</code> environment variable in Vercel's dashboard (copy from your <code>.env.local</code>). Vercel will automatically build and deploy. Since we use Neon (cloud database), the same database works locally and in production.</span>
+                </div>
+            </div>
+
+            <div class="qa-item" style="margin-bottom: 30px;">
+                <div class="qa-question" style="background: #313244; padding: 15px 20px; border-radius: 10px 10px 0 0; border-left: 4px solid #89b4fa;">
+                    <strong style="color: #89b4fa;">Q:</strong> <span style="color: #cdd6f4;">What testing framework is being used?</span>
+                </div>
+                <div class="qa-answer" style="background: #181825; padding: 15px 20px; border-radius: 0 0 10px 10px; border-left: 4px solid #a6e3a1;">
+                    <strong style="color: #a6e3a1;">A:</strong> <span style="color: #bac2de;">Currently, there are no automated tests. This is intentional for simplicity. To add tests, you can use <code>Jest</code> for unit tests and <code>Playwright</code> or <code>Cypress</code> for end-to-end tests. Run <code>npm install --save-dev jest @testing-library/react</code> to get started.</span>
+                </div>
+            </div>
+
+            <div class="qa-item" style="margin-bottom: 30px;">
+                <div class="qa-question" style="background: #313244; padding: 15px 20px; border-radius: 10px 10px 0 0; border-left: 4px solid #89b4fa;">
+                    <strong style="color: #89b4fa;">Q:</strong> <span style="color: #cdd6f4;">How do I seed the database with test data?</span>
+                </div>
+                <div class="qa-answer" style="background: #181825; padding: 15px 20px; border-radius: 0 0 10px 10px; border-left: 4px solid #a6e3a1;">
+                    <strong style="color: #a6e3a1;">A:</strong> <span style="color: #bac2de;">Use the Neon Dashboard's SQL editor to run INSERT statements, or connect with a database client. The database currently has 18 sample questions (10 answered, 8 unanswered) about a fictional financial software company using Kotlin, Jira, and Confluence.</span>
+                </div>
+            </div>
+        </section>
+
     </div>
 
     <footer class="footer">
