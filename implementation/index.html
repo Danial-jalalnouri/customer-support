@@ -404,6 +404,76 @@ http://localhost:3000
             </div>
         </section>
 
+        <!-- Version 2: Neon Migration -->
+        <section class="section">
+            <h2><span class="emoji">🚀</span> Version 2 — Migrated to Neon Database</h2>
+            <p>In Version 2, we moved from a local SQLite database to <strong>Neon</strong> — a cloud-based PostgreSQL database. Here's what changed and why:</p>
+
+            <h3>Why Did We Migrate?</h3>
+            <div class="step-grid">
+                <div class="step-card">
+                    <h4>SQLite Was Local Only</h4>
+                    <p>The old database was a file on your computer. If your computer crashes or you deploy to a server, the data is gone.</p>
+                </div>
+                <div class="step-card">
+                    <h4>Neon Is Cloud-Based</h4>
+                    <p>Neon stores your data in the cloud. It's accessible from anywhere, automatically backed up, and works with Vercel.</p>
+                </div>
+                <div class="step-card">
+                    <h4>Ready for Production</h4>
+                    <p>Neon is a real PostgreSQL database — the same type used by banks and large companies. It's reliable and scalable.</p>
+                </div>
+            </div>
+
+            <h3>What Changed Technically?</h3>
+            <table>
+                <thead>
+                    <tr><th>Before (SQLite)</th><th>After (Neon PostgreSQL)</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Data stored in a local file</td><td>Data stored in the cloud</td></tr>
+                    <tr><td>SQL syntax: <code>?</code> placeholders</td><td>SQL syntax: <code>$1, $2</code> placeholders</td></tr>
+                    <tr><td>Auto-increment: <code>AUTOINCREMENT</code></td><td>Auto-increment: <code>SERIAL</code></td></tr>
+                    <tr><td>String matching: <code>LIKE</code> (case-sensitive)</td><td>String matching: <code>ILIKE</code> (case-insensitive)</td></tr>
+                    <tr><td>Connection: File system</td><td>Connection: HTTPS via Neon serverless driver</td></tr>
+                </tbody>
+            </table>
+
+            <h3>New Files Added</h3>
+            <table>
+                <thead>
+                    <tr><th>File</th><th>Purpose</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>.env.local</code></td><td>Stores the Neon database connection string (kept secret, not in git)</td></tr>
+                    <tr><td><code>lib/db.ts</code></td><td>Updated to use Neon's serverless driver instead of SQLite</td></tr>
+                </tbody>
+            </table>
+
+            <h3>How the Connection Works</h3>
+            <div class="flow-diagram">
+                <div class="flow-row">
+                    <div class="flow-box green">
+                        <p>Your App<br>(Next.js)</p>
+                    </div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-box purple">
+                        <p>Neon Driver<br>(@neondatabase/serverless)</p>
+                    </div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-box yellow">
+                        <p>Neon Cloud<br>(PostgreSQL)</p>
+                    </div>
+                </div>
+            </div>
+            <p>The app connects to Neon over HTTPS — no need to install PostgreSQL locally. The connection string in <code>.env.local</code> tells the app where to find the database.</p>
+
+            <div class="info-box success">
+                <h4>Better for Vercel Deployment</h4>
+                <p>Unlike SQLite, Neon works perfectly with Vercel's serverless functions. When we deploy, the app will connect to the same Neon database — no data loss, no setup needed.</p>
+            </div>
+        </section>
+
         <!-- Future Plans -->
         <section class="section">
             <h2><span class="emoji">🔮</span> What's Coming Next</h2>
@@ -414,17 +484,9 @@ http://localhost:3000
                     <p>People will need to log in to ask or answer questions. This keeps the system secure and tracks who said what.</p>
                 </div>
                 <div class="step-card">
-                    <h4>Production Database</h4>
-                    <p>Right now, data lives on your computer. Later, we'll move it to a cloud database so it's accessible from anywhere and backed up automatically.</p>
-                </div>
-                <div class="step-card">
                     <h4>Deploy to Vercel</h4>
                     <p>The system will be hosted on Vercel — a website hosting service. Anyone with the link will be able to use it.</p>
                 </div>
-            </div>
-            <div class="info-box warning">
-                <h4>Important Note About SQLite</h4>
-                <p>The current database (SQLite) works perfectly on your computer, but it won't work on Vercel because Vercel's servers don't have a permanent file system. That's why we'll switch to a cloud database later.</p>
             </div>
         </section>
 
@@ -446,7 +508,7 @@ http://localhost:3000
     </div>
 
     <footer class="footer">
-        <p>Customer Support System — Implementation Guide v1.0</p>
+        <p>Customer Support System — Implementation Guide v2.0</p>
     </footer>
 </body>
 </html>
