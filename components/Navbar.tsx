@@ -7,6 +7,7 @@ const navItems = [
   { href: '/qa', label: 'Q&A' },
   { href: '/ask', label: 'Ask a Question' },
   { href: '/unanswered', label: 'Unanswered' },
+  { href: '/admin', label: 'Admin' },
 ];
 
 export default function Navbar() {
