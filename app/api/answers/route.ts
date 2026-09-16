@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     [questionId]
   );
 
-  return NextResponse.json(serialize(result.rows ?? result));
+  return NextResponse.json(serialize(result));
 }
 
 export async function POST(request: NextRequest) {
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
   }
 
   const questionCheck = await sql.query('SELECT id FROM questions WHERE id = $1', [question_id]);
-  if ((questionCheck.rows ?? questionCheck).length === 0) {
+  if (questionCheck.length === 0) {
     return NextResponse.json({ error: 'Question not found' }, { status: 404 });
   }
 
@@ -55,5 +55,5 @@ export async function POST(request: NextRequest) {
     [question_id, answerBody.trim()]
   );
 
-  return NextResponse.json(serialize(result.rows ?? result)[0], { status: 201 });
+  return NextResponse.json(serialize(result)[0], { status: 201 });
 }

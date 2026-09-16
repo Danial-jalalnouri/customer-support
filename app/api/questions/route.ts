@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
         [embeddingStr]
       );
 
-      return NextResponse.json(serialize(result.rows ?? result));
+      return NextResponse.json(serialize(result));
     } catch (error) {
       console.error('Vector search error:', error);
       return NextResponse.json({ error: 'Vector search failed' }, { status: 500 });
@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
   }
 
   const result = await sql.query(query, values);
-  return NextResponse.json(serialize(result.rows ?? result));
+  return NextResponse.json(serialize(result));
 }
 
 export async function POST(request: NextRequest) {
@@ -123,5 +123,5 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  return NextResponse.json(serialize(result.rows ?? result)[0], { status: 201 });
+  return NextResponse.json(serialize(result)[0], { status: 201 });
 }
