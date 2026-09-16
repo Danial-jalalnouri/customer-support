@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import sql from '@/lib/db';
+import { getSql } from '@/lib/db';
 import { getQueryEmbedding, getDocumentEmbedding } from '@/lib/embeddings';
 
 function serialize(rows: Record<string, unknown>[]) {
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
       const embedding = await getQueryEmbedding(similar);
       const embeddingStr = `[${embedding.join(',')}]`;
 
-      const result = await sql.query(
+      const result = await getSql().query(
         `SELECT q.*, CAST(COUNT(a.id) AS INTEGER) as answer_count,
          1 - (q.embedding <=> $1::vector) as similarity
          FROM questions q
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
         [embeddingStr]
       );
 
-      return NextResponse.json(serialize(result));
+      return NextResponse.json(serialize(result as Record<string, unknown>[]));
     } catch (error) {
       console.error('Vector search error:', error);
       return NextResponse.json({ error: 'Vector search failed' }, { status: 500 });
@@ -88,8 +88,8 @@ export async function GET(request: NextRequest) {
       query += ' ORDER BY q.created_at DESC';
   }
 
-  const result = await sql.query(query, values);
-  return NextResponse.json(serialize(result));
+  const result = await getSql().query(query, values);
+  return NextResponse.json(serialize(result as Record<string, unknown>[]));
 }
 
 export async function POST(request: NextRequest) {
@@ -112,16 +112,16 @@ export async function POST(request: NextRequest) {
 
   let result;
   if (embeddingStr) {
-    result = await sql.query(
+    result = await getSql().query(
       'INSERT INTO questions (title, body, embedding) VALUES ($1, $2, $3::vector) RETURNING *',
       [title.trim(), questionBody?.trim() || null, embeddingStr]
     );
   } else {
-    result = await sql.query(
+    result = await getSql().query(
       'INSERT INTO questions (title, body) VALUES ($1, $2) RETURNING *',
       [title.trim(), questionBody?.trim() || null]
     );
   }
 
-  return NextResponse.json(serialize(result)[0], { status: 201 });
+  return NextResponse.json(serialize(result as Record<string, unknown>[])[0], { status: 201 });
 }

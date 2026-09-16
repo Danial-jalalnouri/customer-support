@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import sql from '@/lib/db';
+import { getSql } from '@/lib/db';
 
 function serialize(rows: Record<string, unknown>[]) {
   return rows.map((row) => {
@@ -25,12 +25,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'question_id is required' }, { status: 400 });
   }
 
-  const result = await sql.query(
+  const result = await getSql().query(
     'SELECT * FROM answers WHERE question_id = $1 ORDER BY created_at ASC',
     [questionId]
   );
 
-  return NextResponse.json(serialize(result));
+  return NextResponse.json(serialize(result as Record<string, unknown>[]));
 }
 
 export async function POST(request: NextRequest) {
@@ -45,15 +45,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Answer body is required' }, { status: 400 });
   }
 
-  const questionCheck = await sql.query('SELECT id FROM questions WHERE id = $1', [question_id]);
-  if (questionCheck.length === 0) {
+  const questionCheck = await getSql().query('SELECT id FROM questions WHERE id = $1', [question_id]);
+  if ((questionCheck as Record<string, unknown>[]).length === 0) {
     return NextResponse.json({ error: 'Question not found' }, { status: 404 });
   }
 
-  const result = await sql.query(
+  const result = await getSql().query(
     'INSERT INTO answers (question_id, body) VALUES ($1, $2) RETURNING *',
     [question_id, answerBody.trim()]
   );
 
-  return NextResponse.json(serialize(result)[0], { status: 201 });
+  return NextResponse.json(serialize(result as Record<string, unknown>[])[0], { status: 201 });
 }

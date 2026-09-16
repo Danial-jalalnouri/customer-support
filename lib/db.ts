@@ -1,8 +1,15 @@
 import { neon } from '@neondatabase/serverless';
 
-const sql = neon(process.env.DATABASE_URL!);
+let sql: ReturnType<typeof neon>;
 
-export default sql;
+export function getSql() {
+  if (!sql) {
+    sql = neon(process.env.DATABASE_URL!);
+  }
+  return sql;
+}
+
+export default getSql;
 
 export interface Question {
   id: number;
