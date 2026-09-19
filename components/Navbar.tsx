@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { SignInButton, SignUpButton, Show, UserButton } from '@clerk/nextjs';
+import { SignInButton, SignUpButton, Show, UserButton, useAuth } from '@clerk/nextjs';
 
 const publicNavItems = [
   { href: '/qa', label: 'Q&A' },
@@ -11,11 +11,11 @@ const publicNavItems = [
 const protectedNavItems = [
   { href: '/ask', label: 'Ask a Question' },
   { href: '/unanswered', label: 'Unanswered' },
-  { href: '/admin', label: 'Admin' },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { orgId } = useAuth();
 
   return (
     <nav className="bg-[#1e1e2e] border-b border-[#444] sticky top-0 z-50">
@@ -52,6 +52,18 @@ export default function Navbar() {
                   {item.label}
                 </Link>
               ))}
+              {orgId && (
+                <Link
+                  href="/admin"
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    pathname === '/admin'
+                      ? 'bg-[#89b4fa] text-[#1e1e2e]'
+                      : 'text-[#cdd6f4] hover:bg-[#313244]'
+                  }`}
+                >
+                  Admin
+                </Link>
+              )}
             </Show>
             <Show when="signed-out">
               <SignInButton>
