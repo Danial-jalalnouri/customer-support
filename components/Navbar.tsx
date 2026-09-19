@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { SignInButton, SignUpButton, Show, UserButton } from '@clerk/nextjs';
 
 const navItems = [
   { href: '/qa', label: 'Q&A' },
@@ -20,7 +21,7 @@ export default function Navbar() {
           <Link href="/qa" className="text-xl font-bold text-[#89b4fa]">
             Support
           </Link>
-          <div className="flex gap-1">
+          <div className="flex items-center gap-2">
             {navItems.map((item) => (
               <Link
                 key={item.href}
@@ -34,6 +35,21 @@ export default function Navbar() {
                 {item.label}
               </Link>
             ))}
+            <Show when="signed-out">
+              <SignInButton>
+                <button className="px-4 py-2 rounded-lg text-sm font-medium text-[#cdd6f4] hover:bg-[#313244]">
+                  Sign In
+                </button>
+              </SignInButton>
+              <SignUpButton>
+                <button className="px-4 py-2 rounded-lg text-sm font-medium bg-[#89b4fa] text-[#1e1e2e] hover:bg-[#74c7ec]">
+                  Sign Up
+                </button>
+              </SignUpButton>
+            </Show>
+            <Show when="signed-in">
+              <UserButton afterSignOutUrl="/" />
+            </Show>
           </div>
         </div>
       </div>
