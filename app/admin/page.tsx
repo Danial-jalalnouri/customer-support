@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@clerk/nextjs';
+import { useOrganizationList } from '@clerk/nextjs';
 import Link from 'next/link';
 
 interface Question {
@@ -19,7 +19,13 @@ export default function AdminPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const { orgId } = useAuth();
+  const { userMemberships } = useOrganizationList({
+    userMemberships: { infinite: true },
+  });
+
+  const isAdmin = userMemberships?.data?.some(
+    (m) => m.role === 'org:admin'
+  ) ?? false;
 
   const fetchQuestions = async () => {
     setLoading(true);
@@ -30,10 +36,10 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
-    if (orgId) {
+    if (isAdmin) {
       fetchQuestions();
     }
-  }, [orgId]);
+  }, [isAdmin]);
 
   const generateEmbedding = async (questionId: number) => {
     setGeneratingId(questionId);
@@ -63,11 +69,11 @@ export default function AdminPage() {
     }
   };
 
-  if (!orgId) {
+  if (!isAdmin) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8 text-center">
         <h1 className="text-3xl font-bold text-[#f38ba8] mb-4">Access Denied</h1>
-        <p className="text-[#a6adc8] mb-6">You need to be part of an organization to access this page.</p>
+        <p className="text-[#a6adc8] mb-6">You need admin privileges to access this page.</p>
         <Link
           href="/qa"
           className="px-4 py-2 bg-[#89b4fa] text-[#1e1e2e] rounded-lg font-medium hover:bg-[#74c7ec] transition-colors"

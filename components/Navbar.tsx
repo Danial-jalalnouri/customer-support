@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { SignInButton, SignUpButton, Show, UserButton, useAuth } from '@clerk/nextjs';
+import { SignInButton, SignUpButton, Show, UserButton, useOrganizationList } from '@clerk/nextjs';
 
 const publicNavItems = [
   { href: '/qa', label: 'Q&A' },
@@ -15,7 +15,13 @@ const protectedNavItems = [
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { orgId } = useAuth();
+  const { userMemberships } = useOrganizationList({
+    userMemberships: { infinite: true },
+  });
+
+  const isAdmin = userMemberships?.data?.some(
+    (m) => m.role === 'org:admin'
+  ) ?? false;
 
   return (
     <nav className="bg-[#1e1e2e] border-b border-[#444] sticky top-0 z-50">
@@ -52,7 +58,7 @@ export default function Navbar() {
                   {item.label}
                 </Link>
               ))}
-              {orgId && (
+              {isAdmin && (
                 <Link
                   href="/admin"
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
