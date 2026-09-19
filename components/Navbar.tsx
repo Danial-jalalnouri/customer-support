@@ -4,8 +4,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { SignInButton, SignUpButton, Show, UserButton } from '@clerk/nextjs';
 
-const navItems = [
+const publicNavItems = [
   { href: '/qa', label: 'Q&A' },
+];
+
+const protectedNavItems = [
   { href: '/ask', label: 'Ask a Question' },
   { href: '/unanswered', label: 'Unanswered' },
   { href: '/admin', label: 'Admin' },
@@ -22,7 +25,7 @@ export default function Navbar() {
             Support
           </Link>
           <div className="flex items-center gap-2">
-            {navItems.map((item) => (
+            {publicNavItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -35,6 +38,21 @@ export default function Navbar() {
                 {item.label}
               </Link>
             ))}
+            <Show when="signed-in">
+              {protectedNavItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    pathname === item.href
+                      ? 'bg-[#89b4fa] text-[#1e1e2e]'
+                      : 'text-[#cdd6f4] hover:bg-[#313244]'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </Show>
             <Show when="signed-out">
               <SignInButton>
                 <button className="px-4 py-2 rounded-lg text-sm font-medium text-[#cdd6f4] hover:bg-[#313244]">
