@@ -25,6 +25,7 @@ interface ClerkUser {
   lastActiveAt: string | null;
   banned: boolean;
   locked: boolean;
+  isAdmin: boolean;
 }
 
 const USERS_PAGE_SIZE = 25;
@@ -312,6 +313,11 @@ export default function AdminPage() {
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="text-[#cdd6f4] font-medium truncate">{name}</span>
+                          {user.isAdmin && (
+                            <span className="px-2 py-0.5 bg-[#89b4fa]/20 text-[#89b4fa] rounded-full text-xs font-medium">
+                              Admin
+                            </span>
+                          )}
                           {user.banned && (
                             <span className="px-2 py-0.5 bg-[#f38ba8]/20 text-[#f38ba8] rounded-full text-xs font-medium">
                               Banned
