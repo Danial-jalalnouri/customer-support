@@ -173,3 +173,76 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  const context = await getSessionContext();
+
+  if (!context) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const { client, userId, memberships } = context;
+
+  const adminOrganizationIds = memberships.data
+    .filter((membership) => membership.role === 'org:admin')
+    .map((membership) => membership.organization.id);
+
+  if (adminOrganizationIds.length === 0) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
+  const body = await request.json().catch(() => null);
+  const targetUserId: unknown = body?.userId;
+
+  if (!targetUserId || typeof targetUserId !== 'string') {
+    return NextResponse.json({ error: 'userId is required' }, { status: 400 });
+  }
+
+  if (targetUserId === userId) {
+    return NextResponse.json(
+      { error: 'You cannot remove your own admin role' },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const removedFrom: string[] = [];
+
+    for (const organizationId of adminOrganizationIds) {
+      const targetMembership =
+        await client.organizations.getOrganizationMembershipList({
+          organizationId,
+          userId: [targetUserId],
+          role: ['org:admin'],
+          limit: 1,
+        });
+
+      if (targetMembership.data.length > 0) {
+        await client.organizations.deleteOrganizationMembership({
+          organizationId,
+          userId: targetUserId,
+        });
+        removedFrom.push(organizationId);
+      }
+    }
+
+    if (removedFrom.length === 0) {
+      return NextResponse.json(
+        { error: 'User is not an admin' },
+        { status: 400 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      userId: targetUserId,
+      removedFrom,
+    });
+  } catch (error) {
+    console.error('Failed to remove admin role:', error);
+    return NextResponse.json(
+      { error: 'Failed to remove admin role' },
+      { status: 500 }
+    );
+  }
+}
