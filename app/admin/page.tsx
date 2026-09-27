@@ -51,6 +51,7 @@ export default function AdminPage() {
   const [usersLoading, setUsersLoading] = useState(false);
   const [usersLoaded, setUsersLoaded] = useState(false);
   const [usersError, setUsersError] = useState('');
+  const [promotingId, setPromotingId] = useState<string | null>(null);
 
   const { userMemberships } = useOrganizationList({
     userMemberships: { infinite: true },
@@ -89,6 +90,34 @@ export default function AdminPage() {
       setUsersError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
       setUsersLoading(false);
+    }
+  };
+
+  const makeAdmin = async (targetUserId: string) => {
+    setPromotingId(targetUserId);
+    setUsersError('');
+
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: targetUserId }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to make user admin');
+      }
+
+      setUsers((prev) =>
+        prev.map((user) =>
+          user.id === targetUserId ? { ...user, isAdmin: true } : user
+        )
+      );
+    } catch (err) {
+      setUsersError(err instanceof Error ? err.message : 'Something went wrong');
+    } finally {
+      setPromotingId(null);
     }
   };
 
@@ -333,15 +362,32 @@ export default function AdminPage() {
                         </div>
                       </div>
                     </div>
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap ${
-                        user.lastSignInAt
-                          ? 'bg-[#a6e3a1]/20 text-[#a6e3a1]'
-                          : 'bg-[#313244] text-[#6c7086]'
-                      }`}
-                    >
-                      {user.lastSignInAt ? 'Signed in' : 'Never signed in'}
-                    </span>
+                    <div className="flex items-center gap-3 shrink-0">
+                      {!user.isAdmin && (
+                        <button
+                          onClick={() => makeAdmin(user.id)}
+                          disabled={promotingId !== null}
+                          className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+                            promotingId === user.id
+                              ? 'bg-[#89b4fa]/50 text-[#1e1e2e] cursor-wait'
+                              : promotingId !== null
+                                ? 'bg-[#313244] text-[#6c7086] cursor-not-allowed'
+                                : 'bg-[#89b4fa] text-[#1e1e2e] hover:bg-[#89b4fa]/90'
+                          }`}
+                        >
+                          {promotingId === user.id ? 'Adding...' : 'Make admin'}
+                        </button>
+                      )}
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap ${
+                          user.lastSignInAt
+                            ? 'bg-[#a6e3a1]/20 text-[#a6e3a1]'
+                            : 'bg-[#313244] text-[#6c7086]'
+                        }`}
+                      >
+                        {user.lastSignInAt ? 'Signed in' : 'Never signed in'}
+                      </span>
+                    </div>
                   </div>
                 );
               })}
