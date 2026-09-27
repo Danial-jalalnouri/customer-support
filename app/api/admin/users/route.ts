@@ -22,6 +22,37 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
+  const organizationIds = [
+    ...new Set(
+      memberships.data.map((membership) => membership.organization.id)
+    ),
+  ];
+
+  const adminUserIds = new Set<string>();
+
+  for (const organizationId of organizationIds) {
+    let memberOffset = 0;
+
+    while (adminUserIds.size < MAX_LIMIT) {
+      const page = await client.organizations.getOrganizationMembershipList({
+        organizationId,
+        role: ['org:admin'],
+        limit: MAX_LIMIT,
+        offset: memberOffset,
+      });
+
+      for (const membership of page.data) {
+        const memberUserId = membership.publicUserData?.userId;
+        if (memberUserId) {
+          adminUserIds.add(memberUserId);
+        }
+      }
+
+      memberOffset += page.data.length;
+      if (page.data.length === 0 || memberOffset >= page.totalCount) break;
+    }
+  }
+
   const { searchParams } = request.nextUrl;
   const limit = Math.min(
     Math.max(Number(searchParams.get('limit')) || DEFAULT_LIMIT, 1),
@@ -54,6 +85,7 @@ export async function GET(request: NextRequest) {
         : null,
       banned: user.banned,
       locked: user.locked,
+      isAdmin: adminUserIds.has(user.id),
     }));
 
     return NextResponse.json({ users, totalCount, limit, offset });
